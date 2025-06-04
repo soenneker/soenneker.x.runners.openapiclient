@@ -14,7 +14,7 @@ using Soenneker.Extensions.ValueTask;
 using Soenneker.Utils.File.Abstract;
 using Soenneker.Utils.File.Download.Abstract;
 using Soenneker.Utils.FileSync.Abstract;
-using System.Collections.Generic;
+using Soenneker.Utils.Usings.Abstract;
 
 namespace Soenneker.X.Runners.OpenApiClient.Utils;
 
@@ -29,9 +29,10 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
     private readonly IFileDownloadUtil _fileDownloadUtil;
     private readonly IFileUtilSync _fileUtilSync;
     private readonly IFileUtil _fileUtil;
+    private readonly IUsingsUtil _usingsUtil;
 
     public FileOperationsUtil(ILogger<FileOperationsUtil> logger, IGitUtil gitUtil, IDotnetUtil dotnetUtil, IProcessUtil processUtil,
-        IOpenApiFixer openApiFixer, IFileDownloadUtil fileDownloadUtil, IFileUtilSync fileUtilSync, IFileUtil fileUtil)
+        IOpenApiFixer openApiFixer, IFileDownloadUtil fileDownloadUtil, IFileUtilSync fileUtilSync, IFileUtil fileUtil, IUsingsUtil usingsUtil)
     {
         _logger = logger;
         _gitUtil = gitUtil;
@@ -41,6 +42,7 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
         _fileDownloadUtil = fileDownloadUtil;
         _fileUtilSync = fileUtilSync;
         _fileUtil = fileUtil;
+        _usingsUtil = usingsUtil;
     }
 
     public async ValueTask Process(CancellationToken cancellationToken = default)
@@ -62,6 +64,12 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
 
         await _processUtil.Start("kiota", gitDirectory, $"kiota generate -l CSharp -d \"{filePath}\" -o src -c XOpenApiClient -n {Constants.Library}",
             waitForExit: true, cancellationToken: cancellationToken).NoSync();
+
+        string projFilePath = Path.Combine(gitDirectory, "src", $"{Constants.Library}.csproj");
+
+        await _dotnetUtil.Restore(projFilePath, cancellationToken: cancellationToken);
+
+        await _usingsUtil.AddMissing(projFilePath, true, 5, cancellationToken);
 
         await BuildAndPush(gitDirectory, cancellationToken).NoSync();
     }
@@ -133,6 +141,6 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
 
         string gitHubToken = EnvironmentUtil.GetVariableStrict("GH__TOKEN");
 
-        await _gitUtil.CommitAndPush(gitDirectory, "soenneker", "Jake Soenneker", "jake@soenneker.com", gitHubToken, "Automated update");
+        await _gitUtil.CommitAndPush(gitDirectory, "soenneker", "Jake Soenneker", "jake@soenneker.com", gitHubToken, "Automated update", cancellationToken);
     }
 }

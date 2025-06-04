@@ -3,6 +3,7 @@ using Soenneker.Managers.Runners.Registrars;
 using Soenneker.X.Runners.OpenApiClient.Utils;
 using Soenneker.X.Runners.OpenApiClient.Utils.Abstract;
 using Soenneker.Utils.File.Download.Registrars;
+using Soenneker.Utils.Usings.Registrars;
 
 namespace Soenneker.X.Runners.OpenApiClient;
 
@@ -23,7 +24,8 @@ public static class Startup
                 .AddScoped<IFileOperationsUtil, FileOperationsUtil>()
                 .AddRunnersManagerAsScoped()
                 .AddFileDownloadUtilAsScoped()
-                .AddScoped<IOpenApiFixer, OpenApiFixer>();
+                .AddScoped<IOpenApiFixer, OpenApiFixer>()
+                .AddUsingsUtilAsScoped();
 
         return services;
     }
