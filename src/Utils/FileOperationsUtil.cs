@@ -47,14 +47,15 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
 
     public async ValueTask Process(CancellationToken cancellationToken = default)
     {
-        string gitDirectory = _gitUtil.CloneToTempDirectory($"https://github.com/soenneker/{Constants.Library.ToLowerInvariantFast()}");
+        string gitDirectory =
+            await _gitUtil.CloneToTempDirectory($"https://github.com/soenneker/{Constants.Library.ToLowerInvariantFast()}", cancellationToken);
 
         string targetFilePath = Path.Combine(gitDirectory, "openapi.json");
 
         _fileUtilSync.DeleteIfExists(targetFilePath);
 
-        string? filePath = await _fileDownloadUtil.Download("https://api.x.com/2/openapi.json",
-            targetFilePath, fileExtension: ".json", cancellationToken: cancellationToken);
+        string? filePath = await _fileDownloadUtil.Download("https://api.x.com/2/openapi.json", targetFilePath, fileExtension: ".json",
+            cancellationToken: cancellationToken);
 
         await _processUtil.Start("dotnet", null, "tool update --global Microsoft.OpenApi.Kiota", waitForExit: true, cancellationToken: cancellationToken);
 
@@ -63,7 +64,8 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
         DeleteAllExceptCsproj(srcDirectory);
 
         await _processUtil.Start("kiota", gitDirectory, $"kiota generate -l CSharp -d \"{filePath}\" -o src -c XOpenApiClient -n {Constants.Library}",
-            waitForExit: true, cancellationToken: cancellationToken).NoSync();
+                              waitForExit: true, cancellationToken: cancellationToken)
+                          .NoSync();
 
         string projFilePath = Path.Combine(gitDirectory, "src", $"{Constants.Library}.csproj");
 
@@ -141,6 +143,6 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
 
         string gitHubToken = EnvironmentUtil.GetVariableStrict("GH__TOKEN");
 
-        await _gitUtil.CommitAndPush(gitDirectory, "soenneker", "Jake Soenneker", "jake@soenneker.com", gitHubToken, "Automated update", cancellationToken);
+        await _gitUtil.CommitAndPush(gitDirectory, "soenneker", "jake@soenneker.com", gitHubToken, "Automated update", cancellationToken);
     }
 }
