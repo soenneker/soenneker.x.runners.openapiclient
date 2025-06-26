@@ -28,11 +28,10 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
     private readonly IOpenApiFixer _openApiFixer;
     private readonly IFileDownloadUtil _fileDownloadUtil;
     private readonly IFileUtilSync _fileUtilSync;
-    private readonly IFileUtil _fileUtil;
     private readonly IUsingsUtil _usingsUtil;
 
     public FileOperationsUtil(ILogger<FileOperationsUtil> logger, IGitUtil gitUtil, IDotnetUtil dotnetUtil, IProcessUtil processUtil,
-        IOpenApiFixer openApiFixer, IFileDownloadUtil fileDownloadUtil, IFileUtilSync fileUtilSync, IFileUtil fileUtil, IUsingsUtil usingsUtil)
+        IOpenApiFixer openApiFixer, IFileDownloadUtil fileDownloadUtil, IFileUtilSync fileUtilSync, IUsingsUtil usingsUtil)
     {
         _logger = logger;
         _gitUtil = gitUtil;
@@ -41,7 +40,6 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
         _openApiFixer = openApiFixer;
         _fileDownloadUtil = fileDownloadUtil;
         _fileUtilSync = fileUtilSync;
-        _fileUtil = fileUtil;
         _usingsUtil = usingsUtil;
     }
 
