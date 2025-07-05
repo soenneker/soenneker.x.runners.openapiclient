@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using Soenneker.Extensions.ValueTask;
 using Soenneker.Utils.File.Abstract;
 using Soenneker.Utils.File.Download.Abstract;
-using Soenneker.Utils.FileSync.Abstract;
 using Soenneker.Utils.Usings.Abstract;
 
 namespace Soenneker.X.Runners.OpenApiClient.Utils;
@@ -25,22 +24,20 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
     private readonly IGitUtil _gitUtil;
     private readonly IDotnetUtil _dotnetUtil;
     private readonly IProcessUtil _processUtil;
-    private readonly IOpenApiFixer _openApiFixer;
     private readonly IFileDownloadUtil _fileDownloadUtil;
-    private readonly IFileUtilSync _fileUtilSync;
     private readonly IUsingsUtil _usingsUtil;
+    private readonly IFileUtil _fileUtil;
 
     public FileOperationsUtil(ILogger<FileOperationsUtil> logger, IGitUtil gitUtil, IDotnetUtil dotnetUtil, IProcessUtil processUtil,
-        IOpenApiFixer openApiFixer, IFileDownloadUtil fileDownloadUtil, IFileUtilSync fileUtilSync, IUsingsUtil usingsUtil)
+        IFileDownloadUtil fileDownloadUtil, IUsingsUtil usingsUtil, IFileUtil fileUtil)
     {
         _logger = logger;
         _gitUtil = gitUtil;
         _dotnetUtil = dotnetUtil;
         _processUtil = processUtil;
-        _openApiFixer = openApiFixer;
         _fileDownloadUtil = fileDownloadUtil;
-        _fileUtilSync = fileUtilSync;
         _usingsUtil = usingsUtil;
+        _fileUtil = fileUtil;
     }
 
     public async ValueTask Process(CancellationToken cancellationToken = default)
@@ -50,7 +47,7 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
 
         string targetFilePath = Path.Combine(gitDirectory, "openapi.json");
 
-        _fileUtilSync.DeleteIfExists(targetFilePath);
+        await _fileUtil.DeleteIfExists(targetFilePath, cancellationToken: cancellationToken);
 
         string? filePath = await _fileDownloadUtil.Download("https://api.x.com/2/openapi.json", targetFilePath, fileExtension: ".json",
             cancellationToken: cancellationToken);

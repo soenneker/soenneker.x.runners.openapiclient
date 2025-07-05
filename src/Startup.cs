@@ -24,7 +24,6 @@ public static class Startup
                 .AddScoped<IFileOperationsUtil, FileOperationsUtil>()
                 .AddRunnersManagerAsScoped()
                 .AddFileDownloadUtilAsScoped()
-                .AddScoped<IOpenApiFixer, OpenApiFixer>()
                 .AddUsingsUtilAsScoped();
 
         return services;
