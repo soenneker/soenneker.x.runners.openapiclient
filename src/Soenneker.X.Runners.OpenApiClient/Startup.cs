@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Soenneker.Kiota.Util.Registrars;
 using Soenneker.Managers.Runners.Registrars;
 using Soenneker.X.Runners.OpenApiClient.Utils;
 using Soenneker.X.Runners.OpenApiClient.Utils.Abstract;
@@ -24,7 +25,8 @@ public static class Startup
                 .AddScoped<IFileOperationsUtil, FileOperationsUtil>()
                 .AddRunnersManagerAsScoped()
                 .AddFileDownloadUtilAsScoped()
-                .AddUsingsUtilAsScoped();
+                .AddUsingsUtilAsScoped()
+                .AddKiotaUtilAsScoped();
 
         return services;
     }
