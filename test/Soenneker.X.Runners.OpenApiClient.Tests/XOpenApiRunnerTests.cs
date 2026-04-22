@@ -1,16 +1,15 @@
-﻿using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.X.Runners.OpenApiClient.Tests;
 
-[Collection("Collection")]
-public sealed class XOpenApiRunnerTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class XOpenApiRunnerTests : HostedUnitTest
 {
-    public XOpenApiRunnerTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public XOpenApiRunnerTests(Host host) : base(host)
     {
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
