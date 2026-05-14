@@ -4,7 +4,6 @@ using Soenneker.Git.Util.Abstract;
 using Soenneker.X.Runners.OpenApiClient.Utils.Abstract;
 using Soenneker.Utils.Dotnet.Abstract;
 using Soenneker.Utils.Environment;
-using Soenneker.Utils.Process.Abstract;
 using System;
 using System.IO;
 using System.Linq;
@@ -15,7 +14,6 @@ using Soenneker.Kiota.Util.Abstract;
 using Soenneker.Utils.Directory.Abstract;
 using Soenneker.Utils.File.Abstract;
 using Soenneker.Utils.File.Download.Abstract;
-using Soenneker.Utils.Usings.Abstract;
 using System.Collections.Generic;
 
 namespace Soenneker.X.Runners.OpenApiClient.Utils;
@@ -26,23 +24,19 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
     private readonly ILogger<FileOperationsUtil> _logger;
     private readonly IGitUtil _gitUtil;
     private readonly IDotnetUtil _dotnetUtil;
-    private readonly IProcessUtil _processUtil;
     private readonly IKiotaUtil _kiotaUtil;
     private readonly IFileDownloadUtil _fileDownloadUtil;
-    private readonly IUsingsUtil _usingsUtil;
     private readonly IFileUtil _fileUtil;
     private readonly IDirectoryUtil _directoryUtil;
 
-    public FileOperationsUtil(ILogger<FileOperationsUtil> logger, IGitUtil gitUtil, IDotnetUtil dotnetUtil, IProcessUtil processUtil,
-        IFileDownloadUtil fileDownloadUtil, IUsingsUtil usingsUtil, IFileUtil fileUtil, IDirectoryUtil directoryUtil, IKiotaUtil kiotaUtil)
+    public FileOperationsUtil(ILogger<FileOperationsUtil> logger, IGitUtil gitUtil, IDotnetUtil dotnetUtil, IFileDownloadUtil fileDownloadUtil,
+        IFileUtil fileUtil, IDirectoryUtil directoryUtil, IKiotaUtil kiotaUtil)
     {
         _logger = logger;
         _gitUtil = gitUtil;
         _dotnetUtil = dotnetUtil;
-        _processUtil = processUtil;
         _kiotaUtil = kiotaUtil;
         _fileDownloadUtil = fileDownloadUtil;
-        _usingsUtil = usingsUtil;
         _fileUtil = fileUtil;
         _directoryUtil = directoryUtil;
     }
@@ -70,8 +64,6 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
         string projFilePath = Path.Combine(gitDirectory, "src", Constants.Library, $"{Constants.Library}.csproj");
 
         await _dotnetUtil.Restore(projFilePath, cancellationToken: cancellationToken);
-
-        await _usingsUtil.AddMissing(projFilePath, true, 5, cancellationToken);
 
         await BuildAndPush(gitDirectory, cancellationToken).NoSync();
     }
